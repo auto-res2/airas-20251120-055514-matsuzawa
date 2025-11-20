@@ -9,61 +9,118 @@
   ],
   "research_study_list": [
     {
-      "title": "QLoRA: Efficient Finetuning of Quantized LLMs"
+      "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+      "meta_data": {
+        "arxiv_id": "2305.14314"
+      }
     },
     {
-      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models"
+      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2309.14717"
+      }
     },
     {
-      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation"
+      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation",
+      "meta_data": {
+        "arxiv_id": "2406.00132"
+      }
     },
     {
-      "title": "Evaluating Quantized Large Language Models"
+      "title": "Evaluating Quantized Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2402.18158"
+      }
     },
     {
-      "title": "Scaling Laws and Compute-Optimal Training Beyond Fixed Training Durations"
+      "title": "Scaling Laws and Compute-Optimal Training Beyond Fixed Training Durations",
+      "meta_data": {
+        "arxiv_id": "2405.18392"
+      }
     },
     {
-      "title": "The Impact of Initialization on LoRA Finetuning Dynamics"
+      "title": "The Impact of Initialization on LoRA Finetuning Dynamics",
+      "meta_data": {
+        "arxiv_id": "2406.08447"
+      }
     },
     {
-      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly"
+      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly",
+      "meta_data": {
+        "arxiv_id": "2105.10762"
+      }
     },
     {
-      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training"
+      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training",
+      "meta_data": {
+        "arxiv_id": "2410.23922"
+      }
     },
     {
-      "title": "LEMON: Lossless model expansion"
+      "title": "LEMON: Lossless model expansion",
+      "meta_data": {
+        "arxiv_id": "2310.07999"
+      }
     },
     {
-      "title": "MoMo: Momentum Models for Adaptive Learning Rates"
+      "title": "MoMo: Momentum Models for Adaptive Learning Rates",
+      "meta_data": {
+        "arxiv_id": "2305.07583"
+      }
     },
     {
-      "title": "Prodigy: An Expeditiously Adaptive Parameter-Free Learner"
+      "title": "Prodigy: An Expeditiously Adaptive Parameter-Free Learner",
+      "meta_data": {
+        "arxiv_id": "2306.06101"
+      }
     },
     {
-      "title": "Multirate Training of Neural Networks"
+      "title": "Multirate Training of Neural Networks",
+      "meta_data": {
+        "arxiv_id": "2106.10771"
+      }
     },
     {
-      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models"
+      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models",
+      "meta_data": {
+        "arxiv_id": "2309.12284"
+      }
     },
     {
-      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset"
+      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset",
+      "meta_data": {
+        "arxiv_id": "2402.10176"
+      }
     },
     {
-      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic"
+      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic",
+      "meta_data": {
+        "arxiv_id": "2405.00332"
+      }
     },
     {
-      "title": "Training Chain-of-Thought via Latent-Variable Inference"
+      "title": "Training Chain-of-Thought via Latent-Variable Inference",
+      "meta_data": {
+        "arxiv_id": "2312.02179"
+      }
     },
     {
-      "title": "Fine-Tuning Enhances Existing Mechanisms: A Case Study on Entity Tracking"
+      "title": "Fine-Tuning Enhances Existing Mechanisms: A Case Study on Entity Tracking",
+      "meta_data": {
+        "arxiv_id": "2402.14811"
+      }
     },
     {
-      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning"
+      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning",
+      "meta_data": {
+        "arxiv_id": "2301.12726"
+      }
     },
     {
-      "title": "Interpreting and Improving Large Language Models in Arithmetic Calculation"
+      "title": "Interpreting and Improving Large Language Models in Arithmetic Calculation",
+      "meta_data": {
+        "arxiv_id": "2409.01659"
+      }
     }
   ]
 }

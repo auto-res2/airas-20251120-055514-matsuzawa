@@ -1,0 +1,78 @@
+run_id: proposed-iter1-Qwen3-0.6B-gsm8k
+method: proposed
+description: Forecast-Aware Dual-Control Pareto Bandit (FAD-PB), seed 0
+seed: 0
+model:
+  name: Qwen/Qwen3-0.6B
+  lora:
+    r: 8
+    alpha: 16
+    dropout: 0.1  # tuned by Optuna
+  precision: fp16
+  gradient_checkpointing: false
+dataset:
+  name: openai/gsm8k
+  split: train
+  val_split: test
+  max_tokens: 2048
+  dataloader_num_workers: 4
+  carbon_trace_path: data/carbon/ffm_2024-05-15_16_5min.csv
+training:
+  batch_size: 16   # micro-batch size
+  epochs: 3
+  base_learning_rate: 2.5e-4   # will be scaled by scheduler
+  initial_gradient_accumulation_steps: 4
+  optimizer: adamw
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  lr_scheduler: fad_pb   # custom scheduler
+  scheduler_cfg:
+    lr_bounds: [0.02, 6.0]   # × base lr
+    ga_choices: [1, 2, 4, 8]
+    mpc:
+      horizon_steps: 12
+      replan_interval_min: 60
+      cem_population: 32     # tunable
+    gp_bandit:
+      window_size: 512
+      beta: 2.0
+      bandwidth_prior: 0.3   # tunable
+    forecast:
+      model_ckpt: artifacts/lstm_co2_forecast.pt
+      lookahead_steps: 12
+    meta_prior:
+      vae_ckpt: artifacts/vae_region_embed.pt
+    safety:
+      max_vram_gb: 80
+  gradient_accumulation_variable: true
+  log_every_n_steps: 100
+  save_checkpoint:
+    every_n_steps: 2000
+    max_keep: 2
+optuna:
+  direction: maximize
+  primary_metric: gsm8k_val_accuracy
+  n_trials: 40
+  timeout_minutes: 240
+  search_space:
+    base_learning_rate:
+      type: loguniform
+      low: 5e-5
+      high: 4e-4
+    initial_gradient_accumulation_steps:
+      type: categorical
+      choices: [1, 2, 4, 8]
+    lora_dropout:
+      type: uniform
+      low: 0.05
+      high: 0.15
+    cem_population:
+      type: categorical
+      choices: [16, 32, 64]
+    gp_bandwidth_prior:
+      type: loguniform
+      low: 0.1
+      high: 1.0
+hydra:
+  run:
+    dir: outputs/${run_id}

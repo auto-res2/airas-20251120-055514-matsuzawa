@@ -1,0 +1,14 @@
+defaults:
+  - _self_
+
+run: ""      # will be overridden via CLI, e.g. run=proposed-iter1
+mode: full    # trial | full
+results_dir: outputs
+
+wandb:
+  entity: gengaru617-personal
+  project: "2025-11-20"
+  mode: online
+
+optuna:
+  n_trials: 0

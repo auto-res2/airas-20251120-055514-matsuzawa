@@ -378,14 +378,14 @@ def run_training(cfg: DictConfig, do_log: bool) -> float:
     if cfg.training.lr_scheduler == "cep_gpzb":
         sched = CEPGPZBScheduler(
             optimizer,
-            getattr(cfg.training, "learning_rate", cfg.training.base_learning_rate),
+            cfg.training.learning_rate,
             cfg.training.scheduler_cfg,
         )
         dyn_ga = False
     elif cfg.training.lr_scheduler == "fad_pb":
         sched = FADPBScheduler(
             optimizer,
-            cfg.training.base_learning_rate,
+            cfg.training.learning_rate,
             cfg.training.scheduler_cfg,
             cfg.dataset.get("carbon_trace_path", None),
             cfg.training.initial_gradient_accumulation_steps,

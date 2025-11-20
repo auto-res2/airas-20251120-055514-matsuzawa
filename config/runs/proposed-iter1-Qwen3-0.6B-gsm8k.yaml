@@ -12,6 +12,7 @@ model:
   gradient_checkpointing: false
 dataset:
   name: openai/gsm8k
+  config: main
   split: train
   val_split: test
   max_tokens: 2048

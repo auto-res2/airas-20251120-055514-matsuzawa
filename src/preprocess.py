@@ -84,8 +84,9 @@ def _tokenise_fn(examples: Dict, tokenizer, max_len: int):
 
 def build_dataloaders(cfg, tokenizer):
     cache = ".cache"
-    ds_train = load_dataset(cfg.dataset.name, split=cfg.dataset.split, cache_dir=cache)
-    ds_val = load_dataset(cfg.dataset.name, split=cfg.dataset.val_split, cache_dir=cache)
+    config = getattr(cfg.dataset, 'config', None)
+    ds_train = load_dataset(cfg.dataset.name, config, split=cfg.dataset.split, cache_dir=cache)
+    ds_val = load_dataset(cfg.dataset.name, config, split=cfg.dataset.val_split, cache_dir=cache)
 
     cols_train, cols_val = ds_train.column_names, ds_val.column_names
 

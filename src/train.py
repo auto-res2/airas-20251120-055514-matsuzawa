@@ -504,8 +504,10 @@ def main(cfg: DictConfig):
         sys.exit(1)
     run_yaml = to_absolute_path(f"config/runs/{cfg.run}.yaml")
     run_cfg = OmegaConf.load(run_yaml)
+    OmegaConf.set_struct(cfg, False)
     cfg = OmegaConf.merge(cfg, run_cfg)
     cfg.run_id = cfg.get("run_id", cfg.run)
+    OmegaConf.set_struct(cfg, True)
 
     # ------------ Mode adjustments ----------------
     if cfg.mode == "trial":

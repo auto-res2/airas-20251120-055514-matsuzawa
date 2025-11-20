@@ -723,3 +723,115 @@ hydra:
 [2025-11-20 07:39:10,258][transformers.generation.utils][WARNING] - A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
 === [TRIAL RUN] PASSED for comparative-1-iter1-Qwen3-0.6B-gsm8k at Thu Nov 20 07:39:14 AM UTC 2025 ===
 
+=== [UV SYNC] Start at Thu Nov 20 07:41:09 UTC 2025 ===
+=== [UV SYNC] Finished successfully at Thu Nov 20 07:41:17 UTC 2025 ===
+=== [TRIAL RUN] Start for proposed-iter1-Qwen3-0.6B-gsm8k at Thu Nov 20 07:41:17 UTC 2025 ===
+Launching training subprocess:
+/mnt/home/toma/KRK-039/_work/airas-20251120-055514-matsuzawa/airas-20251120-055514-matsuzawa/.venv/bin/python3 -m src.train run=proposed-iter1-Qwen3-0.6B-gsm8k results_dir=/mnt/home/toma/KRK-039/_work/airas-20251120-055514-matsuzawa/airas-20251120-055514-matsuzawa/.research/iteration1 mode=trial
+================ Resolved Config ================
+run: proposed-iter1-Qwen3-0.6B-gsm8k
+mode: trial
+results_dir: /mnt/home/toma/KRK-039/_work/airas-20251120-055514-matsuzawa/airas-20251120-055514-matsuzawa/.research/iteration1
+wandb:
+  entity: gengaru617-personal
+  project: '2025-11-20'
+  mode: disabled
+optuna:
+  n_trials: 0
+  direction: maximize
+  primary_metric: gsm8k_val_accuracy
+  timeout_minutes: 240
+  search_space:
+    learning_rate:
+      type: loguniform
+      low: 5.0e-05
+      high: 0.0004
+    initial_gradient_accumulation_steps:
+      type: categorical
+      choices:
+      - 1
+      - 2
+      - 4
+      - 8
+    lora_dropout:
+      type: uniform
+      low: 0.05
+      high: 0.15
+    cem_population:
+      type: categorical
+      choices:
+      - 16
+      - 32
+      - 64
+    gp_bandwidth_prior:
+      type: loguniform
+      low: 0.1
+      high: 1.0
+run_id: proposed-iter1-Qwen3-0.6B-gsm8k
+method: proposed
+description: Forecast-Aware Dual-Control Pareto Bandit (FAD-PB), seed 0
+seed: 0
+model:
+  name: Qwen/Qwen3-0.6B
+  lora:
+    r: 8
+    alpha: 16
+    dropout: 0.1
+  precision: fp16
+  gradient_checkpointing: true
+dataset:
+  name: openai/gsm8k
+  config: main
+  split: train
+  val_split: test
+  max_tokens: 2048
+  dataloader_num_workers: 4
+  carbon_trace_path: data/carbon/ffm_2024-05-15_16_5min.csv
+training:
+  batch_size: 4
+  epochs: 1
+  learning_rate: 0.00025
+  initial_gradient_accumulation_steps: 8
+  optimizer: adamw
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  lr_scheduler: fad_pb
+  scheduler_cfg:
+    lr_bounds:
+    - 0.02
+    - 6.0
+    ga_choices:
+    - 1
+    - 2
+    - 4
+    - 8
+    mpc:
+      horizon_steps: 12
+      replan_interval_min: 60
+      cem_population: 32
+    gp_bandit:
+      window_size: 512
+      beta: 2.0
+      bandwidth_prior: 0.3
+    forecast:
+      model_ckpt: artifacts/lstm_co2_forecast.pt
+      lookahead_steps: 12
+    meta_prior:
+      vae_ckpt: artifacts/vae_region_embed.pt
+    safety:
+      max_vram_gb: 80
+  gradient_accumulation_variable: true
+  log_every_n_steps: 100
+  save_checkpoint:
+    every_n_steps: 2000
+    max_keep: 2
+hydra:
+  run:
+    dir: outputs/${run_id}
+
+[2025-11-20 16:41:48,913][transformers.configuration_utils][WARNING] - `torch_dtype` is deprecated! Use `dtype` instead!
+[2025-11-20 16:42:37,055][transformers.utils.generic][WARNING] - `use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+[2025-11-20 16:42:38,481][transformers.generation.utils][WARNING] - A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
+[2025-11-20 16:42:40,794][transformers.generation.utils][WARNING] - A decoder-only architecture is being used, but right-padding was detected! For correct generation results, please set `padding_side='left'` when initializing the tokenizer.
+=== [TRIAL RUN] PASSED for proposed-iter1-Qwen3-0.6B-gsm8k at Thu Nov 20 07:42:48 UTC 2025 ===
+

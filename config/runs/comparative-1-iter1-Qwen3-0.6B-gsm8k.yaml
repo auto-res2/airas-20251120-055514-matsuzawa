@@ -9,7 +9,7 @@ model:
     alpha: 16
     dropout: 0.1  # tuned by Optuna
   precision: fp16
-  gradient_checkpointing: false
+  gradient_checkpointing: true
 dataset:
   name: openai/gsm8k
   config: main
@@ -19,7 +19,7 @@ dataset:
   dataloader_num_workers: 4
   carbon_trace_path: data/carbon/ffm_2024-05-15_16_5min.csv
 training:
-  batch_size: 16
+  batch_size: 8
   epochs: 3
   learning_rate: 2.5e-4  # adapted by scheduler
   gradient_accumulation_steps: 4  # fixed

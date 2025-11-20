@@ -6,5 +6,64 @@
     "adaptive learning rate",
     "GSM8K fine-tuning",
     "elementary math fine-tuning"
+  ],
+  "research_study_list": [
+    {
+      "title": "QLoRA: Efficient Finetuning of Quantized LLMs"
+    },
+    {
+      "title": "QA-LoRA: Quantization-Aware Low-Rank Adaptation of Large Language Models"
+    },
+    {
+      "title": "QuanTA: Efficient High-Rank Fine-Tuning of LLMs with Quantum-Informed Tensor Adaptation"
+    },
+    {
+      "title": "Evaluating Quantized Large Language Models"
+    },
+    {
+      "title": "Scaling Laws and Compute-Optimal Training Beyond Fixed Training Durations"
+    },
+    {
+      "title": "The Impact of Initialization on LoRA Finetuning Dynamics"
+    },
+    {
+      "title": "AutoLRS: Automatic Learning-Rate Schedule by Bayesian Optimization on the Fly"
+    },
+    {
+      "title": "Analyzing & Reducing the Need for Learning Rate Warmup in GPT Training"
+    },
+    {
+      "title": "LEMON: Lossless model expansion"
+    },
+    {
+      "title": "MoMo: Momentum Models for Adaptive Learning Rates"
+    },
+    {
+      "title": "Prodigy: An Expeditiously Adaptive Parameter-Free Learner"
+    },
+    {
+      "title": "Multirate Training of Neural Networks"
+    },
+    {
+      "title": "MetaMath: Bootstrap Your Own Mathematical Questions for Large Language Models"
+    },
+    {
+      "title": "OpenMathInstruct-1: A 1.8 Million Math Instruction Tuning Dataset"
+    },
+    {
+      "title": "A Careful Examination of Large Language Model Performance on Grade School Arithmetic"
+    },
+    {
+      "title": "Training Chain-of-Thought via Latent-Variable Inference"
+    },
+    {
+      "title": "Fine-Tuning Enhances Existing Mechanisms: A Case Study on Entity Tracking"
+    },
+    {
+      "title": "Specializing Smaller Language Models towards Multi-Step Reasoning"
+    },
+    {
+      "title": "Interpreting and Improving Large Language Models in Arithmetic Calculation"
+    }
   ]
 }

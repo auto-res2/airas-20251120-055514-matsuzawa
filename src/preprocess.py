@@ -102,8 +102,9 @@ def build_dataloaders(cfg, tokenizer):
     )
 
     numeric = ["input_ids", "attention_mask", "labels"]
-    ds_train.set_format(type="torch", columns=numeric)
-    ds_val.set_format(type="torch", columns=numeric)
+    all_cols = numeric + ["raw_question", "raw_answer"]
+    ds_train.set_format(type="torch", columns=all_cols)
+    ds_val.set_format(type="torch", columns=all_cols)
 
     def collate(batch: List[Dict]):
         out = {}

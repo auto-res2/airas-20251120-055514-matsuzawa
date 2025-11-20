@@ -240,7 +240,78 @@
     "iterations": [
       {
         "iteration_id": 1,
-        "method": "Forecast-Aware Dual-Control Pareto Bandit (FAD-PB)\nA. Two-dimensional action  a_t = (log lr_t , log ga_t) with bounds lr∈[0.02,6]·base, GA∈{1,2,4,8}.  GA is applied by changing gradient-accumulation steps on the fly—1 line in the training loop.\nB. Tri-objective instantaneous reward  r_t = P(L_t) · P(E_t) · P(CO2_t) identical to CEP-GPZB, but E_t and CO2_t are predicted one hour ahead by an LSTM trained on 90 days of ElectricityMap data for the target region.\nC. Model-Predictive Planning  Every 60 min we solve   max_{a_{t:t+H−1}}  Σ_{τ=t}^{t+H−1} 𝔼[ r_τ ]   with H=12 (≈1 h) using 32-sample cross-entropy method (CEM) over the action space.  The first action is executed; the rest form a receding-horizon prior for the bandit.\nD. Hierarchical Meta-Prior  A shared 16-D VAE learns embeddings of daily CO₂ curves from 12 regions.  Posterior GP over (region-embed, log lr, log ga)→r initialises all new runs, allowing zero-shot warm-start in unseen regions.\nE. Online Bandit Correction  Between MPC replans, a continuous Thompson zooming GP (as in CEP-GPZB) fine-tunes log lr; GA is kept fixed unless the bandit’s upper-confidence bound suggests >5 % reward gain by switching.\nF. Safety  If forecast API fails, fall back to reactive CEP-GPZB behaviour; if GA change would overflow GPU memory, it is skipped.\nState footprint  ≈11 kB (forecast LSTM weights streamed once per hour + GP window).  Extra compute: one 32×32 Cholesky per hour plus one 32-sample CEM (~3 ms on CPU)."
+        "method": "Forecast-Aware Dual-Control Pareto Bandit (FAD-PB)\nA. Two-dimensional action  a_t = (log lr_t , log ga_t) with bounds lr∈[0.02,6]·base, GA∈{1,2,4,8}.  GA is applied by changing gradient-accumulation steps on the fly—1 line in the training loop.\nB. Tri-objective instantaneous reward  r_t = P(L_t) · P(E_t) · P(CO2_t) identical to CEP-GPZB, but E_t and CO2_t are predicted one hour ahead by an LSTM trained on 90 days of ElectricityMap data for the target region.\nC. Model-Predictive Planning  Every 60 min we solve   max_{a_{t:t+H−1}}  Σ_{τ=t}^{t+H−1} 𝔼[ r_τ ]   with H=12 (≈1 h) using 32-sample cross-entropy method (CEM) over the action space.  The first action is executed; the rest form a receding-horizon prior for the bandit.\nD. Hierarchical Meta-Prior  A shared 16-D VAE learns embeddings of daily CO₂ curves from 12 regions.  Posterior GP over (region-embed, log lr, log ga)→r initialises all new runs, allowing zero-shot warm-start in unseen regions.\nE. Online Bandit Correction  Between MPC replans, a continuous Thompson zooming GP (as in CEP-GPZB) fine-tunes log lr; GA is kept fixed unless the bandit’s upper-confidence bound suggests >5 % reward gain by switching.\nF. Safety  If forecast API fails, fall back to reactive CEP-GPZB behaviour; if GA change would overflow GPU memory, it is skipped.\nState footprint  ≈11 kB (forecast LSTM weights streamed once per hour + GP window).  Extra compute: one 32×32 Cholesky per hour plus one 32-sample CEM (~3 ms on CPU).",
+        "experimental_design": {
+          "experiment_summary": "Goal: demonstrate that the Forecast-Aware Dual-Control Pareto Bandit (FAD-PB) learning-rate/gradient-accumulation scheduler achieves higher mathematical-reasoning accuracy while cutting carbon emissions and training time during LoRA fine-tuning of Qwen3-0.6B on the GSM8K dataset.\nTask: autoregressive next-token prediction specialised for grade-school math word-problem solving. The model is adapted via LoRA for three training epochs (≈11 K optimisation steps) and evaluated by sampling a chain-of-thought followed by a numeric answer.\nWorkflow:\n1. LoRA fine-tuning initialised from the public Qwen3-0.6B weights.\n2. Training loop instrumented with the carbon-intensity trace of the datacentre (replayed 5-min resolution) and GPU power draw to compute step-level kg CO₂.\n3. At each optimisation step FAD-PB selects an action a_t=(log lr_t, log ga_t). The hourly MPC layer uses one-hour CO₂ and energy-price forecasts to plan a 12-step action sequence via the cross-entropy method. Between replans, a Gaussian-process Thompson-sampling bandit refines lr_t and decides whether to keep/alter GA.\n4. Baseline comparison run uses the reactive CEP-GPZB scheduler (LR-only).\n5. Metrics (accuracy, kg CO₂, wall-clock) logged every 100 steps and aggregated at the end of three epochs.\n6. Hyperparameter search (3 seeds × grid) tunes the initial base learning rate, initial GA and LoRA dropout.",
+          "evaluation_metrics": [
+            {
+              "name": "GSM8K validation accuracy",
+              "description": "Correctness criteria: a prediction is correct if the final numeric answer extracted from the model’s generated text exactly matches the gold answer after normalising white-space and stripping trailing punctuation. Calculation: accuracy = (# correct problems) / (total validation problems). Appropriateness: GSM8K is a single-answer reasoning task; accuracy directly measures problem-solving ability. Visualisations: learning curve of accuracy vs. training steps and bar chart comparing final accuracy across schedulers."
+            },
+            {
+              "name": "kg CO₂ emitted",
+              "description": "Correctness criteria: compute the mass of CO₂ associated with the electricity consumed by the GPU node during training. Calculation: For each step, CO2_step = power_GPU (kW) × step_duration (h) × carbon_intensity (kg CO₂/kWh); sum over all steps. Appropriateness: measures the environmental cost—central to the study’s sustainability objective. Visualisations: cumulative kg CO₂ over wall-clock time and stacked bars for each scheduler."
+            },
+            {
+              "name": "total wall-clock time",
+              "description": "Correctness criteria: real elapsed time (in hours) from first to last optimisation step, including scheduler overhead. Calculation: difference between end and start timestamps recorded by the trainer. Appropriateness: shows whether lower emissions come at the expense of speed. Visualisations: bar plot of total time and timeline of instantaneous throughput (tokens/s)."
+            },
+            {
+              "name": "CO₂-per-accuracy ratio",
+              "description": "Correctness criteria: kg CO₂ emitted divided by final GSM8K accuracy. Calculation: metric = (kg CO₂) / (accuracy). Appropriateness: reflects overall eco-efficiency of learning. Visualisations: scatter plot of accuracy vs. CO₂ with iso-lines of constant ratio."
+            },
+            {
+              "name": "(1) GSM8K validation accuracy; (2) kg CO₂ emitted; (3) total wall-clock time.",
+              "description": "Primary metric as specified in hypothesis: (1) GSM8K validation accuracy; (2) kg CO₂ emitted; (3) total wall-clock time."
+            }
+          ],
+          "proposed_method": "Forecast-Aware Dual-Control Pareto Bandit (FAD-PB)\nObjectives: maximise learning progress and energy efficiency while minimising carbon emissions during training, without exceeding the memory/compute budget of lightweight LoRA runs.\nTheory: treats scheduler design as an online tri-objective optimisation problem. Uses model-predictive control (MPC) to exploit hour-ahead forecasts and a Gaussian-process (GP) bandit to adaptively refine decisions within the forecast horizon.\nComponents:\n1. Action space: a_t=(log lr_t, log ga_t) where lr∈[0.02,6]×base_lr and GA∈{1,2,4,8}. GA changes realised by updating gradient-accumulation steps in the trainer.\n2. Reward: r_t = P(L_t)·P(E_t)·P(CO₂_t) where L_t = loss improvement, E_t = energy price, CO₂_t = carbon intensity. P(·) are monotone Pareto scores mapping each scalar to [0,1].\n3. Forecast module: a two-layer LSTM trained on 90-day historical ElectricityMap traces outputs one-hour carbon-intensity and price forecasts every 5 min.\n4. MPC layer: every 60 min, solve max_{a_{t:t+11}} Σ E[r_τ] using a 32-sample cross-entropy method; execute first action, keep rest as prior.\n5. Meta-prior: a 16-dim VAE embeds daily CO₂ curves from 12 regions; a GP with kernel k((e,lr,ga),(e′,lr′,ga′)) initialises the posterior for new regions enabling zero-shot warm-start.\n6. Online GP bandit: continuous Thompson-sampling zooms around MPC suggestion, fine-tuning lr each step; GA stays unless a 95 % confidence upper bound suggests ≥5 % expected reward gain.\n7. Safety fallbacks: revert to reactive CEP-GPZB if forecast unavailable; skip GA increases that exceed available VRAM.\nAlgorithmic procedure (per optimisation step):\n• if new hour ⇒ update forecasts, run CEM, refill action buffer\n• pop (lr_t, ga_t) from buffer; set optimiser lr and trainer GA\n• run forward/backward; after weight update compute realised r_t\n• update GP with (log lr_t, log ga_t, r_t) and produce Thompson candidate for next step\n• decide whether to adjust lr_t+1 (always) and GA_t+1 (only if benefit >5 %)\nCompute/memory footprint: ≈11 kB state, ≈3 ms CPU per hour.",
+          "comparative_methods": [
+            "CEP-GPZB scheduler (reactive, LR-only)"
+          ],
+          "models_to_use": [
+            "Qwen3-0.6B"
+          ],
+          "datasets_to_use": [
+            "gsm8k"
+          ],
+          "hyperparameters_to_search": [
+            {
+              "name": "base_learning_rate",
+              "range": "5e-5-4e-4"
+            },
+            {
+              "name": "initial_gradient_accumulation_steps",
+              "range": "1,2,4,8"
+            },
+            {
+              "name": "lora_dropout",
+              "range": "0.05-0.15"
+            },
+            {
+              "name": "cem_population",
+              "range": "16,32,64"
+            },
+            {
+              "name": "gp_bandwidth_prior",
+              "range": "0.1-1.0"
+            }
+          ]
+        },
+        "experiment_runs": [
+          {
+            "run_id": "proposed-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "proposed",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          },
+          {
+            "run_id": "comparative-1-iter1-Qwen3-0.6B-gsm8k",
+            "method_name": "comparative-1",
+            "model_name": "Qwen3-0.6B",
+            "dataset_name": "gsm8k"
+          }
+        ]
       }
     ]
   }
